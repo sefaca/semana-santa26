@@ -1,0 +1,247 @@
+/* ============================================================
+   animations.css - Semana Santa Sevilla
+   All keyframe animations and transition utilities
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   @keyframes definitions
+   ------------------------------------------------------------ */
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.15);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes countdownPulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes progressBar {
+  from {
+    width: 0;
+  }
+  to {
+    width: var(--progress, 100%);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(-100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ------------------------------------------------------------
+   Card stagger animation
+   .cofradia-card enters with fadeInUp, staggered by 50ms
+   ------------------------------------------------------------ */
+
+.cofradia-card {
+  animation: fadeInUp 0.5s ease-out both;
+}
+
+.cofradia-card:nth-child(1)  { animation-delay: 0ms; }
+.cofradia-card:nth-child(2)  { animation-delay: 50ms; }
+.cofradia-card:nth-child(3)  { animation-delay: 100ms; }
+.cofradia-card:nth-child(4)  { animation-delay: 150ms; }
+.cofradia-card:nth-child(5)  { animation-delay: 200ms; }
+.cofradia-card:nth-child(6)  { animation-delay: 250ms; }
+.cofradia-card:nth-child(7)  { animation-delay: 300ms; }
+.cofradia-card:nth-child(8)  { animation-delay: 350ms; }
+.cofradia-card:nth-child(9)  { animation-delay: 400ms; }
+.cofradia-card:nth-child(10) { animation-delay: 450ms; }
+.cofradia-card:nth-child(11) { animation-delay: 500ms; }
+.cofradia-card:nth-child(12) { animation-delay: 550ms; }
+
+/* ------------------------------------------------------------
+   Modal entrance
+   ------------------------------------------------------------ */
+
+.modal-overlay {
+  animation: fadeIn 0.25s ease-out both;
+}
+
+.modal {
+  animation: slideInRight 0.35s ease-out both, fadeIn 0.35s ease-out both;
+}
+
+/* ------------------------------------------------------------
+   Tabs entrance (staggered slideInRight)
+   ------------------------------------------------------------ */
+
+.tabs__btn {
+  animation: slideInRight 0.35s ease-out both;
+}
+
+.tabs__btn:nth-child(1) { animation-delay: 0ms; }
+.tabs__btn:nth-child(2) { animation-delay: 50ms; }
+.tabs__btn:nth-child(3) { animation-delay: 100ms; }
+.tabs__btn:nth-child(4) { animation-delay: 150ms; }
+.tabs__btn:nth-child(5) { animation-delay: 200ms; }
+.tabs__btn:nth-child(6) { animation-delay: 250ms; }
+
+/* ------------------------------------------------------------
+   Weather bar
+   ------------------------------------------------------------ */
+
+.weather-bar {
+  animation: fadeIn 0.5s ease-out 0.3s both;
+}
+
+/* ------------------------------------------------------------
+   Skeleton loading
+   Shimmer effect: light gray to white gradient sweeping across
+   ------------------------------------------------------------ */
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    #e0e0e0 25%,
+    #f5f5f5 50%,
+    #e0e0e0 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+  border-radius: 4px;
+}
+
+/* ------------------------------------------------------------
+   Progress bar fill
+   Animates width from 0 to --progress on load
+   ------------------------------------------------------------ */
+
+.progress-fill {
+  animation: progressBar 1s ease-out both;
+}
+
+/* ------------------------------------------------------------
+   Active / live status dot pulse
+   ------------------------------------------------------------ */
+
+.legend-dot--active,
+.status-badge--active::after {
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+/* ------------------------------------------------------------
+   Countdown number pulse
+   ------------------------------------------------------------ */
+
+.countdown__number {
+  animation: countdownPulse 1s ease-in-out infinite;
+}
+
+/* ------------------------------------------------------------
+   Loading spinner
+   ------------------------------------------------------------ */
+
+.spinner {
+  animation: spin 0.8s linear infinite;
+}
+
+/* ------------------------------------------------------------
+   Slide-down utility (modals, overlays, dropdowns)
+   ------------------------------------------------------------ */
+
+.slide-down {
+  animation: slideDown 0.35s ease-out both;
+}
+
+/* ------------------------------------------------------------
+   Generic transition utilities
+   ------------------------------------------------------------ */
+
+.transition-opacity {
+  transition: opacity 0.3s ease;
+}
+
+.transition-transform {
+  transition: transform 0.3s ease;
+}
+
+.transition-all {
+  transition: all 0.3s ease;
+}
+
+/* ------------------------------------------------------------
+   Reduced motion
+   Respect user preference - disable all animations
+   ------------------------------------------------------------ */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    animation-delay: 0ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
