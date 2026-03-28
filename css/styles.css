@@ -1552,7 +1552,8 @@ ul, ol {
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: var(--space-md);
+  align-items: center;
+  gap: var(--space-xs);
   text-align: center;
 }
 
@@ -1584,7 +1585,6 @@ ul, ol {
   font-size: var(--text-sm);
   color: var(--color-accent);
   font-style: italic;
-  margin-top: var(--space-md);
 }
 
 .footer__thanks {
@@ -1595,7 +1595,6 @@ ul, ol {
 .footer__author {
   font-size: var(--text-sm);
   color: rgba(255, 255, 255, 0.7);
-  margin-top: var(--space-sm);
 }
 
 .footer__author strong {
@@ -1605,8 +1604,8 @@ ul, ol {
 .footer__copy {
   font-size: var(--text-xs);
   color: rgba(255, 255, 255, 0.3);
-  margin-top: var(--space-sm);
-  padding-top: var(--space-md);
+  margin-top: var(--space-xs);
+  padding-top: var(--space-sm);
   border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
@@ -2327,14 +2326,9 @@ ul, ol {
 
   /* Footer */
   .footer__inner {
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: var(--space-base);
-  }
-
-  .footer__source {
-    flex-basis: 100%;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-xs);
   }
 
   /* Install prompt — inline */

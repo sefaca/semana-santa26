@@ -5,6 +5,7 @@
   'use strict';
 
   var cache = {};
+  var currentWeather = null;
   var loaded = false;
 
   /**
@@ -49,16 +50,16 @@
   }
 
   /**
-   * Fetch weather forecast from Open-Meteo and populate cache.
-   * Fetches daily data for the full Semana Santa 2026 range.
+   * Fetch weather from Open-Meteo: current conditions + daily forecast.
    */
   function init() {
+    // Fetch both current weather AND daily forecast in one call
     var url = 'https://api.open-meteo.com/v1/forecast'
       + '?latitude=37.3861&longitude=-5.9926'
+      + '&current=temperature_2m,weather_code,relative_humidity_2m,wind_speed_10m'
       + '&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max'
       + '&timezone=Europe/Madrid'
-      + '&start_date=2026-03-27'
-      + '&end_date=2026-04-05';
+      + '&forecast_days=16';
 
     return fetch(url)
       .then(function (response) {
@@ -68,34 +69,44 @@
         return response.json();
       })
       .then(function (data) {
-        if (!data || !data.daily || !data.daily.time) {
-          throw new Error('Invalid weather data format');
-        }
-
-        var daily = data.daily;
-        var dates = daily.time;
-        var codes = daily.weather_code;
-        var maxTemps = daily.temperature_2m_max;
-        var minTemps = daily.temperature_2m_min;
-        var precipProbs = daily.precipitation_probability_max;
-
-        for (var i = 0; i < dates.length; i++) {
-          var code = codes[i];
-          cache[dates[i]] = {
-            tempMax: Math.round(maxTemps[i]),
-            tempMin: Math.round(minTemps[i]),
-            precipProb: precipProbs[i] != null ? precipProbs[i] : 0,
+        // Store current real-time conditions
+        if (data && data.current) {
+          var code = data.current.weather_code;
+          currentWeather = {
+            temp: Math.round(data.current.temperature_2m),
+            humidity: data.current.relative_humidity_2m,
+            wind: Math.round(data.current.wind_speed_10m),
             icon: getWeatherIcon(code),
             description: getDescription(code),
             code: code
           };
         }
 
+        // Store daily forecasts
+        if (data && data.daily && data.daily.time) {
+          var daily = data.daily;
+          var dates = daily.time;
+          var codes = daily.weather_code;
+          var maxTemps = daily.temperature_2m_max;
+          var minTemps = daily.temperature_2m_min;
+          var precipProbs = daily.precipitation_probability_max;
+
+          for (var i = 0; i < dates.length; i++) {
+            cache[dates[i]] = {
+              tempMax: Math.round(maxTemps[i]),
+              tempMin: Math.round(minTemps[i]),
+              precipProb: precipProbs[i] != null ? precipProbs[i] : 0,
+              icon: getWeatherIcon(codes[i]),
+              description: getDescription(codes[i]),
+              code: codes[i]
+            };
+          }
+        }
+
         loaded = true;
         renderWeatherBar();
       })
       .catch(function () {
-        // On error, hide the weather bar gracefully
         var weatherBar = document.getElementById('weather-bar');
         if (weatherBar) {
           weatherBar.style.display = 'none';
@@ -143,16 +154,40 @@
 
     weatherBar.style.display = '';
 
-    var html = '<span class="weather-bar__icon">' + weather.icon + '</span>';
-    html += '<span class="weather-bar__temps">';
-    html += '<span class="weather-bar__max">' + weather.tempMax + '\u00B0</span>';
-    html += ' / ';
-    html += '<span class="weather-bar__min">' + weather.tempMin + '\u00B0</span>';
-    html += '</span>';
-    html += '<span class="weather-bar__precip">';
-    html += '\uD83D\uDCA7 ' + weather.precipProb + '%';
-    html += '</span>';
-    html += '<span class="weather-bar__desc">' + weather.description + '</span>';
+    // Check if selected day is today -> show real current conditions
+    var todayStr = getSelectedDayDate();
+    var now = new Date();
+    var todayDate = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
+    var isToday = (dateStr === todayDate);
+
+    var html = '';
+
+    if (isToday && currentWeather) {
+      // Show real-time current weather
+      html += '<span class="weather-bar__icon">' + currentWeather.icon + '</span>';
+      html += '<span class="weather-bar__temps">';
+      html += '<span class="weather-bar__max">' + currentWeather.temp + '\u00B0 ahora</span>';
+      html += '</span>';
+      html += '<span class="weather-bar__desc">' + currentWeather.description + '</span>';
+      html += '<span class="weather-bar__precip">';
+      html += '\uD83D\uDCA7 ' + weather.precipProb + '%';
+      html += '</span>';
+      html += '<span class="weather-bar__temps">';
+      html += ' (M\u00E1x ' + weather.tempMax + '\u00B0 / M\u00EDn ' + weather.tempMin + '\u00B0)';
+      html += '</span>';
+    } else {
+      // Show daily forecast for other days
+      html += '<span class="weather-bar__icon">' + weather.icon + '</span>';
+      html += '<span class="weather-bar__temps">';
+      html += '<span class="weather-bar__max">' + weather.tempMax + '\u00B0</span>';
+      html += ' / ';
+      html += '<span class="weather-bar__min">' + weather.tempMin + '\u00B0</span>';
+      html += '</span>';
+      html += '<span class="weather-bar__desc">' + weather.description + '</span>';
+      html += '<span class="weather-bar__precip">';
+      html += '\uD83D\uDCA7 ' + weather.precipProb + '%';
+      html += '</span>';
+    }
 
     weatherContent.innerHTML = html;
   }
